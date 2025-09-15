@@ -1,21 +1,23 @@
 import argparse
 import os
-import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
 
 # Agent imports
 from agents.data_analyzer import DataAnalyzer
 
-def load_data(file_path):
-    """Loads data from a CSV or Excel file."""
-    if file_path.endswith('.csv'):
-        df = pd.read_csv(file_path)
-    elif file_path.endswith('.xlsx'):
-        df = pd.read_excel(file_path)
-    else:
-        raise ValueError("Unsupported file format. Please use a CSV or Excel file.")
-    return df
+def load_data_as_string(file_path):
+    """Loads data from a CSV file and returns it as a string."""
+    if not file_path.endswith('.csv'):
+        raise ValueError("Unsupported file format. Please use a CSV file.")
+
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Error: The file '{file_path}' was not found.")
+    except Exception as e:
+        raise Exception(f"Error reading file: {e}")
 
 def main():
     """Main function to orchestrate the agentic flow."""
@@ -24,12 +26,12 @@ def main():
 
     # Set up argument parser
     parser = argparse.ArgumentParser(description="AI-Powered Data Analysis and Reporting Agent")
-    parser.add_argument("--file_path", required=True, help="Path to the data file (CSV or Excel)")
+    parser.add_argument("--file_path", required=True, help="Path to the data file (CSV only)")
     args = parser.parse_args()
 
     # Load the data
     try:
-        data = load_data(args.file_path)
+        data_string = load_data_as_string(args.file_path)
         print("Data loaded successfully.")
     except Exception as e:
         print(f"Error loading data: {e}")
@@ -50,18 +52,13 @@ def main():
 
     print("OpenAI client initialized.")
 
-    # Convert dataframe to string or a format suitable for the LLM
-    data_string = data.to_csv(index=False)
-
     # --- Agent Orchestration ---
-    # This is where the agents will be called in sequence.
-    # For now, we'll just have placeholders.
-
     print("\n--- Starting Agentic Flow ---")
 
     # 1. Data Analysis Agent
     print("\n1. Running Data Analysis Agent...")
     data_analysis_agent = DataAnalyzer(client)
+    # Note: The CLI does not support BRD/user prompt context, only the Streamlit app does.
     analysis_report = data_analysis_agent.analyze(data_string)
     print("\n--- Data Analysis Report ---")
     print(analysis_report)

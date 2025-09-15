@@ -1,6 +1,8 @@
 # AI-Powered Data Analysis and Reporting Agent
 
-This project is an intelligent agentic flow that automates the process of data analysis, visualization, and reporting. It takes a dataset in CSV or Excel format, performs a detailed analysis, generates actionable insights, creates data stories, suggests visualizations, and provides a step-by-step guide to build a dashboard in Power BI.
+This project is an intelligent agentic flow that automates the process of data analysis, visualization, and reporting. It takes a dataset in CSV format, performs a detailed analysis, generates actionable insights, creates data stories, suggests visualizations, and provides a step-by-step guide to build a dashboard in Power BI.
+
+*Note: To ensure compatibility with free deployment platforms, this application currently supports **CSV files only**.*
 
 ## Features
 
@@ -50,10 +52,24 @@ This project is an intelligent agentic flow that automates the process of data a
 
 ## Usage
 
-Run the main script with the path to your data file:
+This project has two primary interfaces: a web-based UI (recommended) and a command-line script.
 
+### Web Application (Streamlit)
+
+The web application provides an interactive interface for uploading files and viewing the analysis.
+
+To run the web app, use the following command:
 ```bash
-python main.py --file_path data/your_data.csv
+streamlit run app.py
 ```
+This will open the application in your web browser.
 
-The script will process the data and generate a report in the `output` directory.
+### Command-Line Interface (CLI)
+
+The CLI can be used for a quick analysis directly from your terminal.
+
+Run the main script with the path to your data file:
+```bash
+python main.py --file_path data/sales_data.csv
+```
+The script will process the data and print the report to the console.

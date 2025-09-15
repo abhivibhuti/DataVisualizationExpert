@@ -1,5 +1,6 @@
 import streamlit as st
-import pandas as pd
+import csv
+import io
 from dotenv import load_dotenv
 from openai import OpenAI
 import os
@@ -7,16 +8,22 @@ import os
 # Import your agent
 from agents.data_analyzer import DataAnalyzer
 
-def load_data_from_upload(uploaded_file):
-    """Loads data from an uploaded file into a pandas DataFrame."""
-    if uploaded_file.name.endswith('.csv'):
-        df = pd.read_csv(uploaded_file)
-    elif uploaded_file.name.endswith('.xlsx'):
-        df = pd.read_excel(uploaded_file)
-    else:
-        st.error("Unsupported file format. Please use a CSV or Excel file.")
+def load_csv_as_string(uploaded_file):
+    """Loads data from an uploaded CSV file and returns it as a string."""
+    try:
+        # Read the uploaded file as a string
+        string_data = uploaded_file.getvalue().decode('utf-8')
+        # Basic validation: Check if it's valid CSV by trying to read it
+        csv_reader = csv.reader(io.StringIO(string_data))
+        # Reconstruct the string to ensure it's a clean CSV format
+        string_io = io.StringIO()
+        csv_writer = csv.writer(string_io)
+        for row in csv_reader:
+            csv_writer.writerow(row)
+        return string_io.getvalue()
+    except Exception as e:
+        st.error(f"Failed to read or process CSV file: {e}")
         return None
-    return df
 
 def main():
     """
@@ -36,7 +43,9 @@ def main():
     with st.sidebar:
         st.header("1. Upload Your Files")
 
-        uploaded_dataset = st.file_uploader("Upload your dataset (CSV or Excel)", type=['csv', 'xlsx'])
+        # Updated file uploader to only accept CSV
+        uploaded_dataset = st.file_uploader("Upload your dataset (CSV only)", type=['csv'])
+
         uploaded_brd = st.file_uploader("Upload your BRD (optional, .txt or .md)", type=['txt', 'md'])
 
         st.header("2. Ask a Question")
@@ -58,10 +67,9 @@ def main():
                 with st.spinner("Analysis in progress... Please wait."):
                     try:
                         # 1. Load data and context
-                        data_df = load_data_from_upload(uploaded_dataset)
-                        if data_df is not None:
-                            data_string = data_df.to_csv(index=False)
+                        data_string = load_csv_as_string(uploaded_dataset)
 
+                        if data_string:
                             brd_content = "Not provided."
                             if uploaded_brd is not None:
                                 brd_content = uploaded_brd.read().decode("utf-8")
@@ -82,8 +90,8 @@ def main():
                                 user_question=user_prompt if user_prompt else "Not provided."
                             )
                         else:
+                            # Error handled in load_csv_as_string
                             st.session_state.analysis_report = None
-
 
                     except Exception as e:
                         st.error(f"An error occurred during analysis: {e}")
