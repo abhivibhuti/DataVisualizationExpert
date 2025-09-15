@@ -18,12 +18,14 @@ class DataAnalyzer:
             print("Error: prompts/data_analyzer_prompt.txt not found.")
             return None
 
-    def analyze(self, data_string: str) -> str:
+    def analyze(self, data_string: str, brd_context: str = "Not provided.", user_question: str = "Not provided.") -> str:
         """
-        Analyzes the given data string using the AI model.
+        Analyzes the given data string using the AI model, with additional context.
 
         Args:
             data_string: The data to be analyzed, as a string.
+            brd_context: The content of the Business Requirements Document.
+            user_question: A specific question from the user.
 
         Returns:
             The analysis report from the AI model.
@@ -31,8 +33,12 @@ class DataAnalyzer:
         if not self.prompt_template:
             return "Error: Prompt template not loaded."
 
-        # Format the prompt with the data
-        prompt = self.prompt_template.format(data=data_string)
+        # Format the prompt with the data and additional context
+        prompt = self.prompt_template.format(
+            data=data_string,
+            brd_context=brd_context,
+            user_question=user_question
+        )
 
         try:
             response = self.client.chat.completions.create(
