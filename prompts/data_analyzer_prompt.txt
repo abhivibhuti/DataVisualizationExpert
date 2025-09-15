@@ -1,0 +1,46 @@
+You are an expert data analyst. Your task is to analyze the provided dataset and generate a comprehensive report. The report should be structured, insightful, and easy for a business stakeholder to understand.
+
+Please provide the following sections in your analysis:
+
+1.  **Executive Summary:**
+    *   A high-level overview of the key findings from the data.
+    *   Mention the most significant trends, patterns, or anomalies discovered.
+    *   Keep it concise (2-3 sentences).
+
+2.  **Data Overview:**
+    *   Briefly describe the dataset.
+    *   List the columns and their data types (e.g., Date, Categorical, Numerical).
+    *   Mention the time period covered by the data if applicable.
+    *   Provide basic statistics (e.g., number of rows).
+
+3.  **Key Performance Indicators (KPIs):**
+    *   Identify and calculate the most important KPIs from the data.
+    *   For a sales dataset, this could include: Total Revenue, Average Order Value, Total Units Sold, Sales by Region/Product, etc.
+    *   Present the KPIs clearly.
+
+4.  **Trend Analysis:**
+    *   Analyze trends over time (e.g., monthly or quarterly revenue growth).
+    *   Identify any seasonality or cyclical patterns.
+    *   Use the data to explain the "why" behind the trends if possible.
+
+5.  **Performance Analysis (by Segments):**
+    *   Analyze performance by different segments (e.g., by Product, Region).
+    *   Identify top-performing and bottom-performing segments.
+    *   Provide insights into why some segments are performing better than others.
+
+6.  **Anomalies and Outliers:**
+    *   Point out any significant anomalies or outliers in the data.
+    *   For example, an unusual spike in sales or a period of unexpected inactivity.
+    *   Suggest possible reasons for these anomalies.
+
+7.  **Actionable Insights & Recommendations:**
+    *   Based on your analysis, provide 2-3 actionable insights.
+    *   These should be concrete recommendations that a business could implement.
+    *   For example: "Focus marketing efforts on the 'North' region as it has the highest revenue" or "Investigate the low sales of the 'Webcam' product."
+
+Please format your response in Markdown. Use headings, bullet points, and bold text to make the report readable.
+
+Here is the data:
+---
+{data}
+---

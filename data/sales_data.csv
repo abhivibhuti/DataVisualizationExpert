@@ -1,0 +1,19 @@
+Date,Region,Product,Units Sold,Price,Revenue
+2023-01-15,North,Laptop,10,1200,12000
+2023-01-20,North,Mouse,50,25,1250
+2023-02-10,South,Keyboard,30,75,2250
+2023-02-18,South,Monitor,20,300,6000
+2023-03-05,North,Laptop,8,1200,9600
+2023-03-12,West,Mouse,40,25,1000
+2023-04-22,East,Laptop,12,1200,14400
+2023-04-30,East,Webcam,25,50,1250
+2023-05-19,South,Monitor,15,300,4500
+2023-06-21,West,Keyboard,35,75,2625
+2023-07-15,North,Laptop,15,1200,18000
+2023-07-25,West,Mouse,45,25,1125
+2023-08-11,East,Laptop,10,1200,12000
+2023-08-29,South,Webcam,20,50,1000
+2023-09-14,North,Monitor,18,300,5400
+2023-10-18,West,Keyboard,30,75,2250
+2023-11-25,East,Mouse,55,25,1375
+2023-12-30,South,Laptop,9,1200,10800
