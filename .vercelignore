@@ -1,0 +1,12 @@
+# Ignore environment variables
+.env
+
+# Ignore sample data
+/data/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environment
+/venv/
