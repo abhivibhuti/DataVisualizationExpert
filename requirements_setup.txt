@@ -1,0 +1,492 @@
+# Data Analyzer Bot - Frontend Setup Guide
+
+## Requirements Files
+
+### requirements.txt (Common Dependencies)
+```
+pandas>=2.0.0
+numpy>=1.24.0
+openai>=1.0.0
+asyncio-ext>=1.0.0
+plotly>=5.17.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+python-dateutil>=2.8.0
+openpyxl>=3.1.0
+```
+
+### Streamlit Requirements (requirements_streamlit.txt)
+```
+streamlit>=1.28.0
+streamlit-plotly>=0.1.0
+streamlit-aggrid>=0.3.4
+extra-streamlit-components>=0.1.60
+```
+
+### Flask Requirements (requirements_flask.txt)
+```
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+Werkzeug>=2.3.0
+Jinja2>=3.1.0
+gunicorn>=21.0.0
+```
+
+## Setup Instructions
+
+### For Streamlit Frontend:
+
+1. **Install Dependencies:**
+```bash
+pip install -r requirements.txt
+pip install -r requirements_streamlit.txt
+```
+
+2. **Create Project Structure:**
+```
+data_analyzer_bot/
+│
+├── streamlit_app.py          # Main Streamlit app
+├── data_analyzer_bot.py      # Your bot logic (from previous artifact)
+├── requirements.txt          # Common dependencies
+├── requirements_streamlit.txt # Streamlit-specific dependencies
+└── .streamlit/
+    └── config.toml          # Streamlit configuration
+```
+
+3. **Streamlit Configuration (.streamlit/config.toml):**
+```toml
+[theme]
+primaryColor = "#3498db"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8f9fa"
+textColor = "#2c3e50"
+
+[server]
+maxUploadSize = 200
+enableCORS = true
+enableXsrfProtection = true
+```
+
+4. **Environment Variables (.env):**
+```env
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_KEY=your-api-key-here
+AZURE_OPENAI_VERSION=2024-02-15-preview
+```
+
+5. **Run Streamlit App:**
+```bash
+streamlit run streamlit_app.py
+```
+
+### For Flask Frontend:
+
+1. **Install Dependencies:**
+```bash
+pip install -r requirements.txt
+pip install -r requirements_flask.txt
+```
+
+2. **Create Project Structure:**
+```
+data_analyzer_bot_flask/
+│
+├── app.py                   # Main Flask app
+├── data_analyzer_bot.py     # Your bot logic
+├── requirements.txt         # Common dependencies
+├── requirements_flask.txt   # Flask-specific dependencies
+├── templates/               # HTML templates (auto-created)
+│   ├── index.html
+│   └── results.html
+├── static/                  # Static files (CSS, JS)
+├── uploads/                 # File uploads (auto-created)
+└── .env                     # Environment variables
+```
+
+3. **Environment Variables (.env):**
+```env
+FLASK_APP=app.py
+FLASK_ENV=development
+SECRET_KEY=your-secret-key-change-in-production
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_KEY=your-api-key-here
+AZURE_OPENAI_VERSION=2024-02-15-preview
+MAX_CONTENT_LENGTH=104857600
+```
+
+4. **Run Flask App:**
+```bash
+# Development
+python app.py
+
+# Or with Flask CLI
+flask run
+
+# Production with Gunicorn
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
+```
+
+## Feature Comparison
+
+### Streamlit Frontend Features:
+✅ **Pros:**
+- Rapid development and deployment
+- Built-in data visualization components
+- Interactive widgets out of the box
+- Automatic UI updates with session state
+- Easy file upload and download
+- Built-in caching mechanisms
+- Great for data science prototypes
+- No need to write HTML/CSS/JS
+
+❌ **Cons:**
+- Less customization control
+- Limited styling options
+- Session management can be tricky
+- Not ideal for production web apps
+- Performance issues with large datasets
+- Limited real-time capabilities
+
+### Flask Frontend Features:
+✅ **Pros:**
+- Full control over UI/UX design
+- Highly customizable with HTML/CSS/JS
+- Better for production applications
+- Excellent session management
+- RESTful API design
+- Scalable architecture
+- Better security controls
+- Real-time capabilities with WebSockets
+
+❌ **Cons:**
+- More development time required
+- Need to write frontend code
+- More complex deployment
+- Manual state management
+- Requires more web development knowledge
+
+## Production Deployment
+
+### Streamlit Deployment:
+
+1. **Streamlit Cloud:**
+```bash
+# Push to GitHub and connect to Streamlit Cloud
+# https://streamlit.io/cloud
+```
+
+2. **Docker Deployment:**
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY requirements*.txt ./
+RUN pip install -r requirements.txt -r requirements_streamlit.txt
+
+COPY . .
+EXPOSE 8501
+
+CMD ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+```
+
+3. **Heroku Deployment:**
+```bash
+# Procfile
+web: sh setup.sh && streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0
+```
+
+### Flask Deployment:
+
+1. **Docker Deployment:**
+```dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+COPY requirements*.txt ./
+RUN pip install -r requirements.txt -r requirements_flask.txt
+
+COPY . .
+EXPOSE 5000
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+```
+
+2. **Azure App Service:**
+```bash
+# Deploy directly to Azure App Service
+az webapp up --sku F1 --name your-app-name
+```
+
+3. **AWS Elastic Beanstalk:**
+```bash
+# application.py (rename app.py)
+eb init -p python-3.9 data-analyzer-bot
+eb create data-analyzer-bot-env
+eb deploy
+```
+
+## Configuration Management
+
+### config.py (For Flask)
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
+    AZURE_OPENAI_ENDPOINT = os.environ.get('AZURE_OPENAI_ENDPOINT')
+    AZURE_OPENAI_API_KEY = os.environ.get('AZURE_OPENAI_API_KEY')
+    AZURE_OPENAI_VERSION = os.environ.get('AZURE_OPENAI_VERSION', '2024-02-15-preview')
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+
+class ProductionConfig(Config):
+    DEBUG = False
+    
+config = {
+    'development': DevelopmentConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}
+```
+
+## Advanced Features Implementation
+
+### 1. Real-time Progress Updates (Flask with WebSockets)
+```python
+from flask_socketio import SocketIO, emit
+
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+@socketio.on('start_analysis')
+def handle_analysis(data):
+    # Run analysis and emit progress updates
+    emit('progress_update', {'progress': 25, 'message': 'Processing data...'})
+    # ... analysis logic ...
+    emit('analysis_complete', {'results': results})
+```
+
+### 2. Advanced Data Validation
+```python
+def validate_uploaded_data(df):
+    issues = []
+    recommendations = []
+    
+    # Check data quality
+    if df.empty:
+        issues.append("Dataset is empty")
+        return issues, recommendations
+    
+    # Check for sufficient data
+    if len(df) < 10:
+        issues.append("Dataset has fewer than 10 rows - results may not be reliable")
+    
+    # Check for missing values
+    missing_pct = (df.isnull().sum().sum() / (df.shape[0] * df.shape[1])) * 100
+    if missing_pct > 50:
+        issues.append(f"Dataset has {missing_pct:.1f}% missing values")
+        recommendations.append("Consider data cleaning or imputation")
+    
+    # Check for data types
+    if len(df.select_dtypes(include=[np.number]).columns) == 0:
+        recommendations.append("No numeric columns found - consider encoding categorical variables")
+    
+    return issues, recommendations
+```
+
+### 3. Caching and Performance
+```python
+from functools import lru_cache
+import hashlib
+
+@lru_cache(maxsize=100)
+def get_data_analysis_cache(data_hash, question_hash):
+    # Return cached results if available
+    pass
+
+def generate_data_hash(df):
+    return hashlib.md5(pd.util.hash_pandas_object(df).values).hexdigest()
+```
+
+### 4. Export Options
+```python
+def export_results(results, format_type='pdf'):
+    if format_type == 'pdf':
+        # Generate PDF report using reportlab
+        pass
+    elif format_type == 'excel':
+        # Export to Excel with multiple sheets
+        pass
+    elif format_type == 'powerpoint':
+        # Generate PowerPoint presentation
+        pass
+```
+
+## Security Considerations
+
+### Input Validation
+```python
+ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls', 'json'}
+MAX_FILE_SIZE = 100 * 1024 * 1024  # 100MB
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def secure_file_upload(file):
+    if not allowed_file(file.filename):
+        raise ValueError("File type not allowed")
+    
+    if len(file.read()) > MAX_FILE_SIZE:
+        raise ValueError("File too large")
+    
+    file.seek(0)  # Reset file pointer
+    return secure_filename(file.filename)
+```
+
+### API Key Management
+```python
+def validate_azure_credentials(endpoint, api_key):
+    try:
+        # Test connection to Azure OpenAI
+        client = AzureOpenAI(
+            azure_endpoint=endpoint,
+            api_key=api_key,
+            api_version="2024-02-15-preview"
+        )
+        # Make a test call
+        return True
+    except Exception:
+        return False
+```
+
+## Monitoring and Logging
+
+### Logging Configuration
+```python
+import logging
+from logging.handlers import RotatingFileHandler
+
+def setup_logging(app):
+    if not app.debug:
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        
+        file_handler = RotatingFileHandler('logs/data_analyzer.log', 
+                                         maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+        ))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+        
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Data Analyzer Bot startup')
+```
+
+## Testing
+
+### Unit Tests
+```python
+import unittest
+from app import app
+
+class DataAnalyzerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
+        self.app.testing = True
+    
+    def test_index_page(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_file_upload(self):
+        # Test file upload functionality
+        pass
+    
+    def test_analysis_flow(self):
+        # Test complete analysis workflow
+        pass
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+## Troubleshooting
+
+### Common Issues:
+
+1. **Azure OpenAI Connection Issues:**
+   - Verify endpoint URL format
+   - Check API key validity
+   - Ensure model deployment name is correct
+
+2. **File Upload Problems:**
+   - Check file size limits
+   - Verify file format support
+   - Ensure proper encoding (UTF-8)
+
+3. **Memory Issues with Large Datasets:**
+   - Implement data chunking
+   - Use streaming for file processing
+   - Add progress indicators
+
+4. **Session Management:**
+   - Clear old sessions regularly
+   - Implement session timeouts
+   - Use database for persistent storage
+
+### Performance Optimization:
+
+1. **Data Processing:**
+   - Use pandas efficiently
+   - Implement data sampling for large datasets
+   - Cache frequent operations
+
+2. **Frontend Optimization:**
+   - Minimize JavaScript bundle size
+   - Use CDN for static assets
+   - Implement lazy loading
+
+3. **Backend Optimization:**
+   - Use async processing
+   - Implement connection pooling
+   - Add response compression
+
+## Getting Started Quickly
+
+1. **Choose Your Frontend:**
+   - Streamlit: Better for quick prototypes and data science focus
+   - Flask: Better for production applications and custom UI
+
+2. **Install Dependencies:**
+```bash
+# For Streamlit
+pip install streamlit pandas plotly openai numpy
+
+# For Flask
+pip install flask pandas plotly openai numpy werkzeug
+```
+
+3. **Set Environment Variables:**
+```bash
+export AZURE_OPENAI_ENDPOINT="your-endpoint"
+export AZURE_OPENAI_API_KEY="your-key"
+```
+
+4. **Run the Application:**
+```bash
+# Streamlit
+streamlit run streamlit_app.py
+
+# Flask
+python app.py
+```
+
+Both frontends provide a complete solution for your Data Analyzer Bot with different strengths depending on your use case!
